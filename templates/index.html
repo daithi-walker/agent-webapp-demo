@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Validate</title>
+  <style>
+    body { font-family: sans-serif; max-width: 480px; margin: 2rem auto; padding: 0 1rem; }
+    input { width: 100%; box-sizing: border-box; padding: .5rem; font-size: 1rem; }
+    button { margin-top: .5rem; padding: .5rem 1rem; font-size: 1rem; cursor: pointer; }
+    #result { margin-top: 1rem; padding: .75rem; border-radius: 4px; display: none; }
+    #result.valid   { background: #d4edda; color: #155724; }
+    #result.invalid { background: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+  <form id="form">
+    <label for="value">Value</label><br>
+    <input id="value" type="text" name="value" required>
+    <button type="submit">Submit</button>
+  </form>
+  <div id="result" role="status"></div>
+
+  <script>
+    document.getElementById('form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const value = document.getElementById('value').value;
+      const result = document.getElementById('result');
+
+      try {
+        const res = await fetch('/validate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ value }),
+        });
+        const data = await res.json();
+        result.textContent = data.reason ?? (data.valid ? 'Valid' : 'Invalid');
+        result.className = data.valid ? 'valid' : 'invalid';
+      } catch {
+        result.textContent = 'Request failed.';
+        result.className = 'invalid';
+      }
+
+      result.style.display = 'block';
+    });
+  </script>
+</body>
+</html>
