@@ -1,0 +1,5 @@
+## Goal
+Build a Flask web app. Create app.py with: GET /health returns JSON {status: ok}, POST /validate accepts JSON {value: any} and returns {valid: bool, reason: str} where valid means value is a positive integer (>0). Create templates/index.html with a minimal form that calls /validate via fetch and shows the result inline. Create requirements.txt with flask. The qa agent must write test_app.py covering all routes and edge cases (non-integer, negative, zero, string, null, missing field) using Flask test client, run pytest, and return structured results.
+
+## This task
+Create templates/index.html: a minimal HTML page with a form containing one text input and a submit button. On submit, call POST /validate via fetch API with JSON body {"value": <input>}, then display the returned {valid, reason} inline on the page without a full page reload. No external CSS/JS dependencies.
