@@ -1,0 +1,5 @@
+## Goal
+Build a Flask web app. Create app.py with: GET /health returns JSON {status: ok}, POST /validate accepts JSON {value: any} and returns {valid: bool, reason: str} where valid means value is a positive integer (>0). Create templates/index.html with a minimal form that calls /validate via fetch and shows the result inline. Create requirements.txt with flask. The qa agent must write test_app.py covering all routes and edge cases (non-integer, negative, zero, string, null, missing field) using Flask test client, run pytest, and return structured results.
+
+## This task
+Create app.py with: (1) GET /health returning JSON {"status": "ok"}; (2) POST /validate accepting JSON body {"value": any}, returning {"valid": bool, "reason": str} — valid means value is a positive integer (>0); reject non-integer types, zero, negatives, missing field, and null with descriptive reason strings. All public functions must have type hints and one-line docstrings per coding standards. Validate at the route boundary only. Create requirements.txt containing a single line: flask
