@@ -21,6 +21,11 @@
   </form>
   <div id="result" role="status"></div>
 
+  <div style="margin-top:1.5rem;">
+    <button type="button" id="load-history">Load History</button>
+  </div>
+  <section id="history" style="margin-top:1rem;"></section>
+
   <script>
     document.getElementById('form').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -42,6 +47,35 @@
       }
 
       result.style.display = 'block';
+    });
+
+    document.getElementById('load-history').addEventListener('click', async () => {
+      const section = document.getElementById('history');
+      try {
+        const res = await fetch('/history');
+        const data = await res.json();
+        if (!Array.isArray(data) || data.length === 0) {
+          section.innerHTML = '<p>No history found.</p>';
+          return;
+        }
+        const rows = data.map(r => `<tr>
+          <td style="padding:.4rem .6rem;border:1px solid #ccc;">${r.timestamp ?? ''}</td>
+          <td style="padding:.4rem .6rem;border:1px solid #ccc;">${r.value ?? ''}</td>
+          <td style="padding:.4rem .6rem;border:1px solid #ccc;">${r.valid ?? ''}</td>
+          <td style="padding:.4rem .6rem;border:1px solid #ccc;">${r.reason ?? ''}</td>
+        </tr>`).join('');
+        section.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:.9rem;">
+          <thead><tr>
+            <th style="padding:.4rem .6rem;border:1px solid #ccc;text-align:left;">Timestamp</th>
+            <th style="padding:.4rem .6rem;border:1px solid #ccc;text-align:left;">Value</th>
+            <th style="padding:.4rem .6rem;border:1px solid #ccc;text-align:left;">Valid</th>
+            <th style="padding:.4rem .6rem;border:1px solid #ccc;text-align:left;">Reason</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>`;
+      } catch {
+        section.innerHTML = '<p style="color:#721c24;">Failed to load history.</p>';
+      }
     });
   </script>
 </body>
