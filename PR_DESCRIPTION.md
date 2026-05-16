@@ -1,30 +1,34 @@
 ## What changed
 
-- Added `app.py`: Flask app with `GET /health` returning `{"status": "ok"}` and `POST /validate` accepting `{"value": any}` and returning `{"valid": bool, "reason": str}`. Validation logic is extracted into a pure `validate_value` function that explicitly rejects `bool` (Python's `bool` is a subclass of `int`, so the guard is required for correctness).
-- Added `templates/index.html`: minimal single-page form that POSTs to `/validate` via the Fetch API and renders the `reason` field inline, styled green for valid / red for invalid. No external dependencies.
-- Added `requirements.txt` listing `flask` as the sole dependency.
+- **`app.py`**: Added in-memory validation history using a `deque(maxlen=50)` guarded by a `threading.Lock`; each `POST /validate` call now appends a record with ISO-8601 UTC timestamp, value, valid, and reason. Added `GET /history` endpoint returning `{"history": [...]}`.
+- **`templates/index.html`**: Added a "Load History" button and a `<section id="history">` that fetches `GET /history` and renders results as a table.
+- **`CHANGELOG.md`**: Created in Keep a Changelog format documenting the 1.1.0 release.
+- **`VERSION`**: Created, set to `1.1.0`.
 
 ## Why
 
-Stand up a minimal Flask validation service with a browser-facing form so users can interactively test whether a value is a positive integer without a full page reload.
+The validator had no persistence or visibility into past results. This adds a lightweight history layer (capped at 50 entries, in-memory only) and exposes it through both a REST endpoint and the existing HTML frontend.
 
 ## Review notes
 
-Security review passed with no findings. Specific observations from the security agent:
+The security review agent raised **two critical findings and one major finding** that are not yet fixed in the submitted code. **This PR should not be merged as-is.**
 
-- No dangerous functions used.
-- No credentials or PII present.
-- Input is type-checked before use.
-- Error responses are generic; no internal detail is leaked.
+**Critical — XSS via unescaped `innerHTML` (`templates/index.html:61–66`):**
+History records are interpolated directly into a template literal assigned to `section.innerHTML` with no HTML escaping. An attacker can `POST {"value": "<img src=x onerror=alert(1)>"}` — the endpoint rejects it as non-integer but still appends the raw string to `_history` — and the payload executes the next time any browser loads history. Fix: build the table using DOM methods (`document.createElement` + `el.textContent = ...`) instead of string interpolation into `innerHTML`.
 
-**Advisory (not a blocker):** The HTML form uses `<input type="text">`, so all user-submitted values arrive at `/validate` as JSON strings (e.g., `"42"` rather than `42`). The endpoint will correctly return `valid: false, reason: "value must be an integer"` for all form submissions, which means the form can never produce a `valid: true` response as currently wired. If the intent is to allow users to validate integer-like strings via the UI, the frontend would need to attempt `JSON.parse` on the input before sending, or use `<input type="number">`.
+**Critical — API shape mismatch makes history permanently non-functional (`templates/index.html:57`):**
+`GET /history` returns `{"history": [...]}` (an object), but the handler checks `Array.isArray(data)` where `data` is that object. `Array.isArray` always returns `false` for a plain object, so the handler always renders "No history found." and returns before building the table. Fix: check `Array.isArray(data.history)` and iterate over `data.history`.
+
+**Major — No tests (`app.py`):**
+Task-4 (QA agent) failed due to a Docker infrastructure error and produced no test files. Coding and testing standards require every public function to have tests covering happy path, at least one edge case, and at least one invalid input. `validate_value`, `validate`, `history`, and `health` are all untested. A `test_app.py` must be added before this work is shippable.
 
 ## Test coverage
 
-The QA agent authored `test_app.py` and `conftest.py` covering all requested routes and edge cases: non-integer, negative, zero, string, null, and missing field, using the Flask test client. The test files are **not present in this workspace** — they were written in the agent's isolated environment and not committed. Additionally, the suite could not be executed because `flask` was not installed in the QA agent's pytest virtualenv (`/opt/pytest-env`), so no pass/fail result is available. Test files should be added and a passing `pytest` run confirmed before merging.
+None. The QA agent (task-4) failed with a Docker infrastructure error and produced no test files. No automated tests exist for any of the new code.
 
 ## Files changed
 
-- `app.py` (new)
-- `requirements.txt` (new)
-- `templates/index.html` (new)
+- `app.py`
+- `templates/index.html`
+- `CHANGELOG.md`
+- `VERSION`
