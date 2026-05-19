@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-05-19
+### Added
+- Unit tests for `AgentType` enum `ValueError` coercion fallback in `execute_task` (unknown agent strings fall back to `AgentType.IMPLEMENTER`)
+- Unit tests for `PRReviewWorkflow.run` verifying prompt construction includes the PR number and optional repo clause
+- Unit tests verifying `GITHUB_TOKEN` env var is passed to Docker only for the `PR_REVIEWER` agent type
+
 ## [1.1.1] - 2026-05-19
 ### Fixed
 - Value input in templates/index.html changed from `type="text"` to `type="number"`
@@ -24,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GET /history endpoint to retrieve validation history
 - History display section in the HTML frontend
 
-[Unreleased]: https://github.com/example/project/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/example/project/compare/v1.1.2...HEAD
+[1.1.2]: https://github.com/example/project/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/example/project/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/example/project/compare/v1.0.0...v1.1.0
