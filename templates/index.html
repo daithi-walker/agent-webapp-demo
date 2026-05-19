@@ -16,7 +16,7 @@
 <body>
   <form id="form">
     <label for="value">Value</label><br>
-    <input id="value" type="text" name="value" required>
+    <input id="value" type="number" name="value" required>
     <button type="submit">Submit</button>
   </form>
   <div id="result" role="status"></div>
@@ -29,14 +29,13 @@
   <script>
     document.getElementById('form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const value = document.getElementById('value').value;
       const result = document.getElementById('result');
 
       try {
         const res = await fetch('/validate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ value }),
+          body: JSON.stringify({ value: parseInt(document.getElementById('value').value, 10) }),
         });
         const data = await res.json();
         result.textContent = data.reason ?? (data.valid ? 'Valid' : 'Invalid');
@@ -54,11 +53,11 @@
       try {
         const res = await fetch('/history');
         const data = await res.json();
-        if (!Array.isArray(data) || data.length === 0) {
+        if (!Array.isArray(data.history) || data.history.length === 0) {
           section.innerHTML = '<p>No history found.</p>';
           return;
         }
-        const rows = data.map(r => `<tr>
+        const rows = data.history.map(r => `<tr>
           <td style="padding:.4rem .6rem;border:1px solid #ccc;">${r.timestamp ?? ''}</td>
           <td style="padding:.4rem .6rem;border:1px solid #ccc;">${r.value ?? ''}</td>
           <td style="padding:.4rem .6rem;border:1px solid #ccc;">${r.valid ?? ''}</td>

@@ -2,7 +2,7 @@ import threading
 from collections import deque
 from datetime import datetime, timezone
 
-from flask import Flask, request, jsonify, Response
+from flask import Flask, render_template, request, jsonify, Response
 
 app = Flask(__name__)
 
@@ -17,6 +17,11 @@ def validate_value(value: object) -> tuple[bool, str]:
     if value <= 0:
         return False, "value must be greater than zero"
     return True, "value is a positive integer"
+
+
+@app.get("/")
+def index() -> str:
+    return render_template("index.html")
 
 
 @app.get("/health")
