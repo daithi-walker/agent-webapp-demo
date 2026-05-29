@@ -64,3 +64,7 @@ def stats() -> Response:
         total = len(_history)
         valid = sum(1 for r in _history if r["valid"])
     return jsonify({"total": total, "valid": valid, "invalid": total - valid})
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
