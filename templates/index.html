@@ -14,17 +14,22 @@
   </style>
 </head>
 <body>
+  <h1>Positive Integer Validator</h1>
+  <p>Submit any number to check whether it is a positive whole number (greater than zero). Results are saved and displayed in the history table below.</p>
+
   <form id="form">
     <label for="value">Value</label><br>
-    <input id="value" type="number" name="value" required>
+    <input id="value" type="number" name="value" required placeholder="e.g. 42">
+    <small>Must be a whole number greater than zero</small>
     <button type="submit">Submit</button>
   </form>
   <div id="result" role="status"></div>
 
-  <div style="margin-top:1.5rem;">
-    <button type="button" id="load-history">Load History</button>
+  <div style="margin-top:1.5rem;display:flex;align-items:center;gap:.75rem;">
+    <strong>History</strong>
+    <button type="button" id="refresh-btn" style="font-size:.8rem;padding:.25rem .6rem;">Refresh</button>
   </div>
-  <section id="history" style="margin-top:1rem;"></section>
+  <section id="history" style="margin-top:.5rem;"></section>
 
   <script>
     document.getElementById('form').addEventListener('submit', async (e) => {
@@ -48,7 +53,7 @@
       result.style.display = 'block';
     });
 
-    document.getElementById('load-history').addEventListener('click', async () => {
+    async function loadHistory() {
       const section = document.getElementById('history');
       try {
         const res = await fetch('/history');
@@ -60,7 +65,7 @@
         const rows = data.history.map(r => `<tr>
           <td style="padding:.4rem .6rem;border:1px solid #ccc;">${r.timestamp ?? ''}</td>
           <td style="padding:.4rem .6rem;border:1px solid #ccc;">${r.value ?? ''}</td>
-          <td style="padding:.4rem .6rem;border:1px solid #ccc;">${r.valid ?? ''}</td>
+          <td style="padding:.4rem .6rem;border:1px solid #ccc;">${r.valid ? 'Valid' : 'Invalid'}</td>
           <td style="padding:.4rem .6rem;border:1px solid #ccc;">${r.reason ?? ''}</td>
         </tr>`).join('');
         section.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:.9rem;">
@@ -75,7 +80,11 @@
       } catch {
         section.innerHTML = '<p style="color:#721c24;">Failed to load history.</p>';
       }
-    });
+    }
+
+    document.getElementById('refresh-btn').addEventListener('click', loadHistory);
+
+    document.addEventListener('DOMContentLoaded', loadHistory);
   </script>
 </body>
 </html>
