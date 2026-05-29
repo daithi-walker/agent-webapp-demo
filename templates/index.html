@@ -11,6 +11,7 @@
     #result { margin-top: 1rem; padding: .75rem; border-radius: 4px; display: none; }
     #result.valid   { background: #d4edda; color: #155724; }
     #result.invalid { background: #f8d7da; color: #721c24; }
+    #stats { margin-top: 1rem; padding: .75rem; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; font-size: .95rem; }
   </style>
 </head>
 <body>
@@ -20,6 +21,7 @@
     <button type="submit">Submit</button>
   </form>
   <div id="result" role="status"></div>
+  <div id="stats"></div>
 
   <div style="margin-top:1.5rem;">
     <button type="button" id="load-history">Load History</button>
@@ -43,10 +45,31 @@
       } catch {
         result.textContent = 'Request failed.';
         result.className = 'invalid';
+      } finally {
+        result.style.display = 'block';
+        fetchStats();
       }
-
-      result.style.display = 'block';
     });
+
+    async function fetchStats() {
+      const panel = document.getElementById('stats');
+      try {
+        const res = await fetch('/stats');
+        const data = await res.json();
+        const total = (data.total ?? 0);
+        const valid = (data.valid ?? 0);
+        const invalid = (data.invalid ?? 0);
+        if (total === 0) {
+          panel.innerHTML = 'No validations yet';
+        } else {
+          panel.innerHTML = `Total: ${total} &nbsp;|&nbsp; Valid: ${valid} &nbsp;|&nbsp; Invalid: ${invalid}`;
+        }
+      } catch {
+        panel.innerHTML = '';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', fetchStats);
 
     document.getElementById('load-history').addEventListener('click', async () => {
       const section = document.getElementById('history');
