@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-05-29
+### Added
+- Application heading ("Positive Integer Validator") and a short description on the homepage explaining what the app does
+- Placeholder text and visible hint on the value input field explaining that the value must be a positive whole number greater than zero
+
+### Changed
+- History table now loads automatically on page load instead of requiring a button click
+- "Load History" button replaced with a "Refresh" button displayed alongside the history table
+- Valid column in the history table now displays "Valid" or "Invalid" instead of "true" or "false"
+
 ## [1.2.0] - 2026-05-29
 ### Added
 - GET /stats endpoint returning total, valid, and invalid validation counts as a JSON summary of all /validate calls since server start
@@ -29,7 +39,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GET /history endpoint to retrieve validation history
 - History display section in the HTML frontend
 
-[Unreleased]: https://github.com/example/project/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/example/project/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/example/project/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/example/project/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/example/project/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/example/project/compare/v1.0.0...v1.1.0
