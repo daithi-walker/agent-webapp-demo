@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-05-29
+### Added
+- GET /stats endpoint returning total, valid, and invalid validation counts as a JSON summary of all /validate calls since server start
+- Three new pytest tests covering /stats in empty state, after valid submissions, and after mixed valid/invalid submissions
+
 ## [1.1.1] - 2026-05-19
 ### Fixed
 - Value input in templates/index.html changed from `type="text"` to `type="number"`
@@ -24,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GET /history endpoint to retrieve validation history
 - History display section in the HTML frontend
 
-[Unreleased]: https://github.com/example/project/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/example/project/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/example/project/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/example/project/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/example/project/compare/v1.0.0...v1.1.0

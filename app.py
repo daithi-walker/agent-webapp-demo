@@ -55,3 +55,12 @@ def history() -> Response:
     with _history_lock:
         records = list(_history)
     return jsonify({"history": records})
+
+
+@app.get("/stats")
+def stats() -> Response:
+    """Returns counts of total, valid, and invalid validation records."""
+    with _history_lock:
+        total = len(_history)
+        valid = sum(1 for r in _history if r["valid"])
+    return jsonify({"total": total, "valid": valid, "invalid": total - valid})
