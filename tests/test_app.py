@@ -1,6 +1,6 @@
 import json
 import pytest
-from app import app
+from app import app, _history
 
 
 @pytest.fixture
@@ -102,3 +102,43 @@ def test_history_record_has_expected_fields(client):
     record = client.get("/history").get_json()["history"][-1]
     for field in ("timestamp", "value", "valid", "reason"):
         assert field in record
+
+
+# ── /stats ────────────────────────────────────────────────────────────────────
+
+
+@pytest.fixture
+def clear_history():
+    _history.clear()
+    yield
+    _history.clear()
+
+
+def test_stats_empty(client, clear_history):
+    resp = client.get("/stats")
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["total"] == 0
+    assert data["valid"] == 0
+    assert data["invalid"] == 0
+    assert data["total"] == data["valid"] + data["invalid"]
+
+
+def test_stats_after_valid_submissions(client, clear_history):
+    client.post("/validate", json={"value": 1})
+    client.post("/validate", json={"value": 2})
+    data = client.get("/stats").get_json()
+    assert data["total"] == 2
+    assert data["valid"] == 2
+    assert data["invalid"] == 0
+    assert data["total"] == data["valid"] + data["invalid"]
+
+
+def test_stats_mixed_submissions(client, clear_history):
+    client.post("/validate", json={"value": 5})
+    client.post("/validate", json={"value": -1})
+    data = client.get("/stats").get_json()
+    assert data["total"] == 2
+    assert data["valid"] == 1
+    assert data["invalid"] == 1
+    assert data["total"] == data["valid"] + data["invalid"]
