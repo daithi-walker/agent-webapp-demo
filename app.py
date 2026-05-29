@@ -49,6 +49,15 @@ def validate() -> tuple[Response, int]:
     return jsonify({"valid": valid, "reason": reason}), 200
 
 
+@app.get("/stats")
+def stats() -> Response:
+    """Returns total, valid, and invalid counts across all validation records."""
+    with _history_lock:
+        total = len(_history)
+        valid = sum(1 for record in _history if record["valid"])
+    return jsonify({"total": total, "valid": valid, "invalid": total - valid})
+
+
 @app.get("/history")
 def history() -> Response:
     """Returns the last 50 validation records, most recent last."""
